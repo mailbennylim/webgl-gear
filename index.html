@@ -12,17 +12,18 @@
 <body>
   <div id="container"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/controls/OrbitControls.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/EffectComposer.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/RenderPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/UnrealBloomPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/OutputPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/libs/stats.module.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js"></script>
+  <!-- Use module type for script tags -->
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+    import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/OutputPass.js';
+    import Stats from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/libs/stats.module.js';
+    import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.14.0/dist/lil-gui.min.js';
 
- <script>
     let camera, scene, renderer, mixer, clock;
     let composer;
     let stats;
@@ -70,11 +71,11 @@
       renderer.toneMapping = THREE.ReinhardToneMapping;
 
       // Post-processing setup
-      const renderScene = new THREE.RenderPass(scene, camera);
-      const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), params.strength, params.radius, params.threshold);
-      const outputPass = new THREE.OutputPass();
+      const renderScene = new RenderPass(scene, camera);
+      const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), params.strength, params.radius, params.threshold);
+      const outputPass = new OutputPass();
 
-      composer = new THREE.EffectComposer(renderer);
+      composer = new EffectComposer(renderer);
       composer.addPass(renderScene);
       composer.addPass(bloomPass);
       composer.addPass(outputPass);
@@ -84,7 +85,7 @@
       document.body.appendChild(stats.dom);
 
       // Orbit Controls
-      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      const controls = new OrbitControls(camera, renderer.domElement);
       controls.maxPolarAngle = Math.PI * 0.5;
       controls.minDistance = 3;
       controls.maxDistance = 8;
