@@ -76,7 +76,7 @@
         camera.add(pointLight);
 
         const loader = new GLTFLoader();
-        const gltf = await loader.loadAsync('PrimaryIonDrive.glb');
+        const gltf = await loader.loadAsync('https://raw.githubusercontent.com/mailbennylim/webgl-gear/main/PrimaryIonDrive.glb');
 
         const model = gltf.scene;
         scene.add(model);
