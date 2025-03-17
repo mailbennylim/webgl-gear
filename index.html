@@ -12,16 +12,15 @@
 <body>
   <div id="container"></div>
 
-  <script type="module">
-    import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-    import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/controls/OrbitControls.js';
-    import { EffectComposer } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/UnrealBloomPass.js';
-    import { OutputPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/OutputPass.js';
-    import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/libs/stats.module.js';
-    import { GUI } from 'https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/OutputPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/libs/stats.module.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js"></script>
 
     let camera, scene, renderer, mixer, clock;
     let composer;
