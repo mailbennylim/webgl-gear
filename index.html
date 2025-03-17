@@ -24,13 +24,14 @@
     </div>
 
     <script type="importmap">
-      {
-        "imports": {
-          "three": "../build/three.module.js",
-          "three/addons/": "./jsm/"
-        }
-      }
-    </script>
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/"
+  }
+}
+</script>
+
 
     <script type="module">
       import * as THREE from 'three';
@@ -74,7 +75,7 @@
         camera.add(pointLight);
 
         const loader = new GLTFLoader();
-        const gltf = await loader.loadAsync('https://raw.githubusercontent.com/mailbennylim/webgl-gear/5aa4d657962beaf9ef468da2c5bba697dce5cfef/PrimaryIonDrive.glb');
+        const gltf = await loader.loadAsync('PrimaryIonDrive.glb');
 
         const model = gltf.scene;
         scene.add(model);
