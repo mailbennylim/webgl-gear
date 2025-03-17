@@ -12,17 +12,17 @@
 <body>
   <div id="container"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/controls/OrbitControls.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/EffectComposer.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/RenderPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/UnrealBloomPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/OutputPass.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/libs/stats.module.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js"></script>
+  <script type="module">
+    import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
+    import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/controls/OrbitControls.js';
+    import { EffectComposer } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/UnrealBloomPass.js';
+    import { OutputPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/OutputPass.js';
+    import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/libs/stats.module.js';
+    import { GUI } from 'https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js';
 
-  <script>
     let camera, scene, renderer, mixer, clock;
     let composer;
     let stats;
@@ -50,7 +50,7 @@
       const pointLight = new THREE.PointLight(0xffffff, 100);
       camera.add(pointLight);
 
-      const loader = new THREE.GLTFLoader();
+      const loader = new GLTFLoader();
       const gltf = await loader.loadAsync('https://raw.githubusercontent.com/mailbennylim/webgl-gear/3b68fa4852e4d75578a374b6f4f1c6c5f4cd80f5/PrimaryIonDrive.glb');
       const model = gltf.scene;
       scene.add(model);
@@ -90,7 +90,7 @@
       controls.maxDistance = 8;
 
       // GUI for adjustments
-      const gui = new dat.GUI();
+      const gui = new GUI();
       const bloomFolder = gui.addFolder('Bloom');
       bloomFolder.add(params, 'threshold', 0.0, 1.0).onChange((value) => bloomPass.threshold = value);
       bloomFolder.add(params, 'strength', 0.0, 3.0).onChange((value) => bloomPass.strength = value);
