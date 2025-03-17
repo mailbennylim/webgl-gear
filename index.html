@@ -1,174 +1,629 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>three.js webgl - postprocessing - unreal bloom</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" href="./main.css">
-    <style>
-      #info > * {
-        max-width: 650px;
-        margin-left: auto;
-        margin-right: auto;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="container"></div>
+:root {
+	color-scheme: light dark;
 
-    <div id="info">
-      <a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> - Bloom pass by <a href="http://eduperiment.com" target="_blank" rel="noopener">Prashant Sharma</a> and <a href="https://clara.io" target="_blank" rel="noopener">Ben Houston</a>
-      <br/>
-      Model: <a href="https://blog.sketchfab.com/art-spotlight-primary-ion-drive/" target="_blank" rel="noopener">Primary Ion Drive</a> by
-      <a href="http://mjmurdock.com/" target="_blank" rel="noopener">Mike Murdock</a>, CC Attribution.
-    </div>
+	--background-color: #fff;
+	--secondary-background-color: #f7f7f7;
 
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.min.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/",
-    "three/addons/postprocessing/OutputPass.js": "https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/postprocessing/Pass.js"
-  }
+	--color-blue: #049EF4;
+	--text-color: #444;
+	--secondary-text-color: #9e9e9e;
+
+	--font-size: 16px;
+	--line-height: 26px;
+
+	--border-style: 1px solid #E8E8E8;
+	--header-height: 48px;
+	--panel-width: 300px;
+	--panel-padding: 16px;
+	--icon-size: 20px;
 }
-</script>
+
+@media (prefers-color-scheme: dark) {
+
+	:root {
+		--background-color: #222;
+		--secondary-background-color: #2e2e2e;
+
+		--text-color: #bbb;
+		--secondary-text-color: #666;
+
+		--border-style: 1px solid #444;
+	}
+
+	#previewsToggler {
+		filter: invert(100%);
+	}
+
+}
+
+@font-face {
+	font-family: 'Roboto Mono';
+	src: local('Roboto Mono'), local('RobotoMono-Regular'), url('../files/RobotoMono-Regular.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 400;
+}
+
+@font-face {
+	font-family: 'Roboto Mono';
+	src: local('Roboto Mono Medium'), local('RobotoMono-Medium'), url('../files/RobotoMono-Medium.woff2') format('woff2');
+	font-style: normal;
+	font-weight: 500;
+}
+
+* {
+	box-sizing: border-box;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+	height: 100%;
+}
+
+html {
+	font-size: calc(var(--font-size) - 1px);
+	line-height: calc(var(--line-height) - 1px);
+}
+
+body {
+	font-family: 'Roboto Mono', monospace;
+	margin: 0px;
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+
+a {
+	text-decoration: none;
+}
+
+h1 {
+	font-size: 18px;
+	line-height: 24px;
+	font-weight: 500;
+}
+
+h2 {
+	padding: 0;
+	margin: 16px 0;
+	font-size: calc(var(--font-size) - 1px);
+	line-height: var(--line-height);
+	font-weight: 500;
+	color: var(--color-blue);
+}
+
+h3 {
+	margin: 0;
+	font-weight: 500;
+	font-size: calc(var(--font-size) - 1px);
+	line-height: var(--line-height);
+	color: var(--secondary-text-color);
+}
+
+h1 a {
+	color: var(--color-blue);
+}
+
+#header {
+	display: flex;
+	height: var(--header-height);
+	border-bottom: var(--border-style);
+	align-items: center;
+}
+#header h1 {
+	padding-left: var(--panel-padding);
+	flex: 1;
+	display: flex;
+	align-items: center;
+	color: var(--color-blue);
+}
+#header #version {
+	border: 1px solid var(--color-blue);
+	color: var(--color-blue);
+	border-radius: 4px;
+	line-height: 16px;
+	padding: 0px 2px;
+	margin-left: 6px;
+	font-size: .9rem;
+}
+#panel {
+	position: fixed;
+	z-index: 100;
+	left: 0px;
+	width: var(--panel-width);
+	height: 100%;
+	overflow: auto;
+	border-right: var(--border-style);
+	display: flex;
+	flex-direction: column;
+	transition: 0s 0s height;
+}
+
+	#panel #clearSearchButton {
+		width: 48px;
+		height: 48px;
+		display: none;
+		background-color: var(--text-color);
+		background-size: var(--icon-size);
+		-webkit-mask-image: url(../files/ic_close_black_24dp.svg);
+		-webkit-mask-position: 50% 50%;
+		-webkit-mask-repeat: no-repeat;
+		mask-image: url(../files/ic_close_black_24dp.svg);
+		mask-position: 50% 50%;
+		mask-repeat: no-repeat;
+		cursor: pointer;
+		margin-right: 0px;
+	}
+
+	#panel.searchFocused #clearSearchButton {
+		display: block;
+	}
+
+	#panel.searchFocused #language {
+		display: none;
+	}
+
+	#panel.searchFocused #filterInput {
+		-webkit-mask-image: none;
+		mask-image: none;
+		background-color: inherit;
+		padding-left: 0;
+	}
+
+	#panel #expandButton {
+		width: 48px;
+		height: 48px;
+		margin-right: 4px;
+		margin-left: 4px;
+		display: none;
+		cursor: pointer;
+		background-color: var(--text-color);
+		background-size: var(--icon-size);
+		-webkit-mask-image: url(../files/ic_menu_black_24dp.svg);
+		-webkit-mask-position: 50% 50%;
+		-webkit-mask-repeat: no-repeat;
+		mask-image: url(../files/ic_menu_black_24dp.svg);
+		mask-position: 50% 50%;
+		mask-repeat: no-repeat;
+	}
+
+	#panel #sections {
+		display: flex;
+		justify-content: center;
+		z-index: 1000;
+		position: relative;
+		height: 100%;
+		align-items: center;
+		font-weight: 500;
+	}
+
+	#panel #sections * {
+		padding: 0 var(--panel-padding);
+		height: 100%;
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+	#panel #sections .selected:after {
+		content: "";
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: -1px;
+		border-bottom: 1px solid var(--text-color);
+	}
+	#panel #sections a {
+		color: var(--secondary-text-color);
+	}
+
+	body.home #panel #sections {
+		display: none;
+	}
 
 
-    <script type="module">
-      import * as THREE from 'three';
+#panel #inputWrapper {
+	display: flex;
+	align-items: center;
+	height: var(--header-height);
+	padding: 0 0 0 var(--panel-padding);
+	position: relative;
+	background: var(--background-color);
+}
+#panel #inputWrapper:after {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	border-bottom: var(--border-style);
+	content: "";
+}
 
-      import Stats from 'three/addons/libs/stats.module.js';
-      import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+	#panel #filterInput {
+		flex: 1;
+		width: 100%;
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--text-color);
+		outline: none;
+		border: 0px;
+		background-color: var(--text-color);
+		background-size: var(--icon-size);
+		-webkit-mask-image: url(../files/ic_search_black_24dp.svg);
+		-webkit-mask-position: 0 50%;
+		-webkit-mask-repeat: no-repeat;
+		mask-image: url(../files/ic_search_black_24dp.svg);
+		mask-position: 0 50%;
+		mask-repeat: no-repeat;
+		font-family: 'Roboto Mono', monospace;
+	}
 
-      import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-      import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-      import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-      import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-      import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-      import { Pass } from 'three/addons/postprocessing/Pass.js';
+	#panel #language {
+		font-family: 'Roboto Mono', monospace;
+		font-size: 1rem;
+		font-weight: 500;
+		color: var(--text-color);
+		border: 0px;
+		background-image: url(ic_arrow_drop_down_black_24dp.svg);
+		background-size: var(--icon-size);
+		background-repeat: no-repeat;
+		background-position: right center;
+		background-color: var(--background-color);
+		padding: 2px 24px 4px 24px;
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		margin-right: 10px;
+		text-align-last: right;
+	}
 
-      let camera, stats;
-      let composer, renderer, mixer, clock;
+		#panel #language:focus {
+			outline: none;
+		}
 
-      const params = {
-        threshold: 0,
-        strength: 1,
-        radius: 0,
-        exposure: 1
-      };
+	#contentWrapper {
+		flex: 1;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
 
-      init();
+	#panel #content {
+		flex: 1;
+		overflow-y: auto;
+		overflow-x: hidden;
+		-webkit-overflow-scrolling: touch;
+		padding: 0 var(--panel-padding) var(--panel-padding) var(--panel-padding);
+	}
 
-      async function init() {
-        const container = document.getElementById('container');
+		#panel #content ul {
+			list-style-type: none;
+			padding: 0px;
+			margin: 0px 0 20px 0;
+		}
+		#panel #content ul li {
+			margin: 1px 0;
+		}
 
-        clock = new THREE.Clock();
+		#panel #content h2:not(.hidden) {
+			margin-top: 16px;
+			border-top: none;
+			padding-top: 0;
+		}
 
-        const scene = new THREE.Scene();
+		#panel #content h2:not(.hidden) ~ h2 {
+			margin-top: 32px;
+			border-top: var(--border-style);
+			padding-top: 12px;
+		}
 
-        camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 100);
-        camera.position.set(-5, 2.5, -3.5);
-        scene.add(camera);
+	        #panel #content h3 {
+			color: var(--text-color);
+			font-weight: 900;
+		}
 
-        scene.add(new THREE.AmbientLight(0xcccccc));
+		#panel #content a {
+			position: relative;
+			color: var(--text-color);
+		}
 
-        const pointLight = new THREE.PointLight(0xffffff, 100);
-        camera.add(pointLight);
+		#panel #content a:hover,
+		#panel #content a:hover .spacer,
+		#panel #content .selected {
+			color: var(--color-blue);
+		}
 
-        const loader = new GLTFLoader();
-        const gltf = await loader.loadAsync('https://raw.githubusercontent.com/mailbennylim/webgl-gear/main/PrimaryIonDrive.glb');
+		#panel #content .selected {
+			text-decoration: underline;
+		}
 
-        const model = gltf.scene;
-        scene.add(model);
+		#panel #content .hidden {
+			display: none !important;
+		}
 
-        mixer = new THREE.AnimationMixer(model);
-        const clip = gltf.animations[0];
-        mixer.clipAction(clip.optimize()).play();
+		#panel #content #previewsToggler {
+			cursor: pointer;
+			float: right;
+			margin-top: 18px;
+			margin-bottom: -18px;
+			opacity: 0.25;
+		}
 
-        //
+		#panel #content.minimal .card {
+			background-color: transparent;
+			margin-bottom: 4px;
+		}
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setAnimationLoop(animate);
-        renderer.toneMapping = THREE.ReinhardToneMapping;
-        container.appendChild(renderer.domElement);
+		#panel #content.minimal .cover {
+			display: none;
+		}
 
-        //
+		#panel #content.minimal .title {
+			padding: 0;
+		}
 
-        const renderScene = new RenderPass(scene, camera);
+		#panel #content.minimal #previewsToggler {
+			opacity: 1;
+		}
 
-        const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        bloomPass.threshold = params.threshold;
-        bloomPass.strength = params.strength;
-        bloomPass.radius = params.radius;
+		body.home #panel #content h2 {
+			margin-bottom: 2px;
+			padding-bottom: 0px;
+			margin-top: 18px;
+			border-top: none;
+			padding-top: 6px;
+		}
 
-        const outputPass = new OutputPass();
+.spacer {
+	color: var(--secondary-text-color);
+	margin-left: 2px;
+	padding-right: 2px;
+}
 
-        composer = new EffectComposer(renderer);
-        composer.addPass(renderScene);
-        composer.addPass(bloomPass);
-        composer.addPass(outputPass);
+#viewer,
+iframe {
+	position: absolute;
+	border: 0px;
+	left: 0;
+	right: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+}
 
-        //
+iframe#viewer {
+	display: none; /* Workaround: The iframe has white background in Chrome for some reason */
+}
 
-        stats = new Stats();
-        container.appendChild(stats.dom);
+#viewer {
+	padding-left: var(--panel-width);
+}
 
-        //
+#button {
+	position: fixed;
+	bottom: 16px;
+	right: 16px;
 
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.maxPolarAngle = Math.PI * 0.5;
-        controls.minDistance = 3;
-        controls.maxDistance = 8;
+	padding: 12px;
+	border-radius: 50%;
+	margin-bottom: 0px;
 
-        //
+	background-color: #FFF;
+	opacity: .9;
+	z-index: 999;
 
-        const gui = new GUI();
+	box-shadow: 0 0 4px rgba(0,0,0,.15);
+}
+	#button:hover {
+		cursor: pointer;
+		opacity: 1;
+	}
+	#button img {
+		display: block;
+		width: var(--icon-size);
+	}
 
-        const bloomFolder = gui.addFolder('bloom');
+	#button.text {
+		border-radius: 25px;
+		padding-right: 20px;
+		padding-left: 20px;
+		color: var(--color-blue);
+		opacity: 1;
+		font-weight: 500;
+	}
 
-        bloomFolder.add(params, 'threshold', 0.0, 1.0).onChange(function (value) {
-          bloomPass.threshold = Number(value);
-        });
 
-        bloomFolder.add(params, 'strength', 0.0, 3.0).onChange(function (value) {
-          bloomPass.strength = Number(value);
-        });
+#projects {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	line-height: 0;
+}
+#projects a {
+	overflow: hidden;
+}
+#projects a img {
+	width: 100%;
+	transform: scale(1.0);
+	transition: 0.15s transform;
+}
+#projects a:hover img {
+	transform: scale(1.08);
+}
 
-        gui.add(params, 'radius', 0.0, 1.0).step(0.01).onChange(function (value) {
-          bloomPass.radius = Number(value);
-        });
 
-        const toneMappingFolder = gui.addFolder('tone mapping');
 
-        toneMappingFolder.add(params, 'exposure', 0.1, 2).onChange(function (value) {
-          renderer.toneMappingExposure = Math.pow(value, 4.0);
-        });
+@media all and ( min-width: 1500px ) {
+	#projects {
+		grid-template-columns: repeat(7, 1fr);
+	}
+}
 
-        window.addEventListener('resize', onWindowResize);
-      }
+@media all and ( min-width: 1700px ) {
+	:root {
+		--panel-width: 360px;
+		--font-size: 18px;
+		--line-height: 28px;
+		--header-height: 56px;
+		--icon-size: 24px;
+	}
+	#projects {
+		grid-template-columns: repeat(8, 1fr);
+	}
+}
 
-      function onWindowResize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
+@media all and ( min-width: 1900px ) {
 
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
+	#projects {
+		grid-template-columns: repeat(9, 1fr);
+	}
 
-        renderer.setSize(width, height);
-        composer.setSize(width, height);
-      }
+}
 
-      function animate() {
-        const delta = clock.getDelta();
+@media all and ( max-width: 1300px ) {
+	#projects {
+		grid-template-columns: repeat(6, 1fr);
+	}
+}
 
-        mixer.update(delta);
+@media all and ( max-width: 1100px ) {
+	#projects {
+		grid-template-columns: repeat(5, 1fr);
+	}
+}
 
-        stats.update();
+@media all and ( max-width: 900px ) {
+	#projects {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
 
-        composer.render();
-      }
-    </script>
-  </body>
-</html>
+@media all and ( max-width: 700px ) {
+	#projects {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+
+.card {
+	border-radius: 3px;
+	overflow: hidden;
+	background-color: var(--secondary-background-color);
+	padding-bottom: 6px;
+	margin-bottom: 16px;
+}
+
+.card.selected {
+	box-shadow: 0 0 0 3px var(--color-blue);
+	text-decoration: none !important;
+}
+
+.card .cover {
+	padding-bottom: 56.25%; /* 16:9 aspect ratio */
+	position: relative;
+	overflow: hidden;
+}
+
+.card .cover img {
+	position: absolute;
+	width: 100%;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.card .title {
+	padding: 8px 12px 4px;
+	font-size: calc(var(--font-size) - 1px);
+	font-weight: 500;
+	line-height: calc(var(--line-height) - 6px);
+}
+
+.card .tag {
+	background-color: var(--background-color);
+	color: var(--color-blue);
+	margin-left: 6px;
+	padding: 1px 6px 2px;
+	border-radius: 2px;
+	font-size: calc(var(--font-size) - 2px);
+	line-height: calc(var(--line-height) - 6px);
+}
+
+/* mobile */
+
+@media all and ( max-width: 640px ) {
+
+	:root {
+		--header-height: 56px;
+		--icon-size: 24px;
+	}
+
+	#projects {
+		grid-template-columns: repeat(2, 1fr);
+	}
+
+	#panel #expandButton {
+		display: block;
+	}
+	#panel {
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 100%;
+		right: 0;
+		z-index: 1000;
+		overflow-x: hidden;
+		transition: 0s 0s height;
+		border: none;
+		height: var(--header-height);
+		transition: 0s 0.2s height;
+	}
+	#panel.open {
+		height: 100%;
+		transition: 0s 0s height;
+	}
+
+	#panelScrim {
+		pointer-events: none;
+		background-color: rgba(0,0,0,0);
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		z-index: 1000;
+		pointer-events: none;
+		transition: .2s background-color;
+	}
+	#panel.open #panelScrim {
+		pointer-events: auto;
+		background-color: rgba(0,0,0,0.4);
+	}
+
+	#contentWrapper {
+		position: absolute;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: var(--background-color);
+		box-shadow: 0 0 8px rgba(0,0,0,.1);
+		width: calc(100vw - 60px);
+		max-width: 360px;
+		z-index: 10000;
+		transition: .25s transform;
+		overflow-x: hidden;
+		margin-right: -380px;
+		line-height: 2rem;
+	}
+	#panel.open #contentWrapper {
+		transform: translate3d(-380px, 0 ,0);
+	}
+	#viewer,
+	iframe {
+		left: 0;
+		top: var(--header-height);
+		width: 100%;
+		height: calc(100% - var(--header-height));
+	}
+	#viewer {
+		padding-left: 0;
+	}
+}
