@@ -20,9 +20,9 @@
     import { EffectComposer } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/EffectComposer.js';
     import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/UnrealBloomPass.js';
-    import { OutputPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/OutputPass.js';
     import Stats from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/libs/stats.module.js';
-    import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.14.0/dist/lil-gui.min.js';
+    // Updated URL for lil-gui (use a different CDN)
+    import { GUI } from 'https://cdn.jsdelivr.net/npm/lil-gui@0.17.0/dist/lil-gui.min.js';
 
     let camera, scene, renderer, mixer, clock;
     let composer;
@@ -73,12 +73,10 @@
       // Post-processing setup
       const renderScene = new RenderPass(scene, camera);
       const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), params.strength, params.radius, params.threshold);
-      const outputPass = new OutputPass();
 
       composer = new EffectComposer(renderer);
       composer.addPass(renderScene);
       composer.addPass(bloomPass);
-      composer.addPass(outputPass);
 
       // Stats
       stats = new Stats();
