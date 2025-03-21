@@ -12,17 +12,17 @@
 <body>
   <div id="container"></div>
 
- <script type="module">
-    import * as THREE from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.js';
-    import { GLTFLoader } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/loaders/GLTFLoader.js';
-    import { OrbitControls } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/controls/OrbitControls.js';
-    import { EffectComposer } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/UnrealBloomPass.js';
-    import { OutputPass } from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/postprocessing/OutputPass.js';
-    import Stats from 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/jsm/libs/stats.module.js';
-    import { GUI } from 'https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js';
-   
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/EffectComposer.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/RenderPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/UnrealBloomPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/postprocessing/OutputPass.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/js/libs/stats.module.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lil-gui/0.14.0/lil-gui.min.js"></script>
+
+  <script>
     let camera, scene, renderer, mixer, clock;
     let composer;
     let stats;
@@ -54,9 +54,6 @@
       const model = gltf.scene;
       scene.add(model);
 
-      // Find the middle section of the model (assuming it's named 'middle')
-      middleSection = model.getObjectByName('middle');  // You can change 'middle' to the actual name of the part
-
       mixer = new THREE.AnimationMixer(model);
       const clip = gltf.animations[0];
       mixer.clipAction(clip.optimize()).play();
@@ -69,25 +66,27 @@
       renderer.toneMapping = THREE.ReinhardToneMapping;
 
       // Post-processing setup
-      const renderScene = new RenderPass(scene, camera);
-      const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), params.strength, params.radius, params.threshold);
+      const renderScene = new THREE.RenderPass(scene, camera);
+      const bloomPass = new THREE.UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), params.strength, params.radius, params.threshold);
+      const outputPass = new THREE.OutputPass();
 
-      composer = new EffectComposer(renderer);
+      composer = new THREE.EffectComposer(renderer);
       composer.addPass(renderScene);
       composer.addPass(bloomPass);
+      composer.addPass(outputPass);
 
       // Stats
       stats = new Stats();
       document.body.appendChild(stats.dom);
 
       // Orbit Controls
-      const controls = new OrbitControls(camera, renderer.domElement);
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.maxPolarAngle = Math.PI * 0.5;
       controls.minDistance = 3;
       controls.maxDistance = 8;
 
       // GUI for adjustments
-      const gui = new GUI();
+      const gui = new dat.GUI();
       const bloomFolder = gui.addFolder('Bloom');
       bloomFolder.add(params, 'threshold', 0.0, 1.0).onChange((value) => bloomPass.threshold = value);
       bloomFolder.add(params, 'strength', 0.0, 3.0).onChange((value) => bloomPass.strength = value);
@@ -113,12 +112,6 @@
     function animate() {
       const delta = clock.getDelta();
       mixer.update(delta);
-
-      // Rotate the middle section
-      if (middleSection) {
-        middleSection.rotation.y += 0.01;  // Adjust the speed of rotation
-      }
-
       stats.update();
       composer.render();
       requestAnimationFrame(animate);
