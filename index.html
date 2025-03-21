@@ -49,7 +49,7 @@
       const pointLight = new THREE.PointLight(0xffffff, 100);
       camera.add(pointLight);
 
-      const loader = new GLTFLoader();
+      const loader = new THREE.GLTFLoader();
       const gltf = await loader.loadAsync('https://raw.githubusercontent.com/mailbennylim/webgl-gear/3b68fa4852e4d75578a374b6f4f1c6c5f4cd80f5/PrimaryIonDrive.glb');
       const model = gltf.scene;
       scene.add(model);
