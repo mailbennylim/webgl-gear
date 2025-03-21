@@ -60,7 +60,9 @@
                     model.scale.set(2, 2, 2);
                     model.position.set(0, 0, 0);
                     scene.add(model);
+            
                     console.log("Model Loaded:", model);
+                    console.log("Model Children:", model.children);  // Log all child objects
                 },
                 undefined,
                 function (error) {
