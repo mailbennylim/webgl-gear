@@ -12,8 +12,8 @@
 <body>
   <div id="container"></div>
 
-  <!-- Use module type for script tags -->
   <script type="module">
+    // ✅ Fix: Using full CDN URLs for three.js and other modules
     import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.module.js';
     import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/loaders/GLTFLoader.js';
     import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/controls/OrbitControls.js';
@@ -21,7 +21,7 @@
     import { RenderPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/RenderPass.js';
     import { UnrealBloomPass } from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/postprocessing/UnrealBloomPass.js';
     import Stats from 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/jsm/libs/stats.module.js';
-    import { GUI } from 'https://unpkg.com/lil-gui@0.17.0/dist/lil-gui.esm.min.js'; // Fixed lil-gui
+    import { GUI } from 'https://unpkg.com/lil-gui@0.17.0/dist/lil-gui.esm.min.js';
 
     let camera, scene, renderer, mixer, clock;
     let composer;
